@@ -1,0 +1,5 @@
+{
+  "name": "排班系統",
+  "description": "方便員工自行排班的系統，支援老闆與員工角色，自動判斷國定假日與週末。",
+  "requestFramePermissions": []
+}

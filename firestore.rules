@@ -1,0 +1,56 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+    
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+    
+    function isAdmin() {
+      // For this demo, any authenticated user can be a boss if their role is boss.
+      // In a real app, this should be more strictly controlled.
+      return isAuthenticated() && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'boss';
+    }
+
+    // ===============================================================
+    // Rules
+    // ===============================================================
+
+    match /users/{userId} {
+      // Anyone authenticated can read users to show names
+      allow read: if isAuthenticated();
+      // Users can create their own profile
+      allow create: if isOwner(userId);
+      // Users can update their own profile (e.g. toggle role for demo)
+      allow update: if isOwner(userId);
+    }
+
+    match /months/{monthId} {
+      // Anyone authenticated can read months
+      allow read: if isAuthenticated();
+      // Anyone authenticated can create/update months (since it's created on the fly)
+      allow write: if isAuthenticated();
+
+      match /days/{date} {
+        allow read: if isAuthenticated();
+        // Employees can update days to schedule themselves
+        allow write: if isAuthenticated();
+      }
+
+      match /employeeStats/{userId} {
+        allow read: if isAuthenticated();
+        // Employees can update their own stats
+        allow write: if isAuthenticated();
+      }
+    }
+  }
+}

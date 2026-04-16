@@ -1,0 +1,81 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "User profile containing role and basic info",
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "User's display name"
+        },
+        "email": {
+          "type": "string",
+          "description": "User's email address"
+        },
+        "role": {
+          "type": "string",
+          "enum": ["employee", "boss"],
+          "description": "Role of the user"
+        }
+      },
+      "required": ["name", "email", "role"]
+    },
+    "Month": {
+      "title": "Month",
+      "description": "Month document to group days",
+      "type": "object",
+      "properties": {
+        "monthId": {
+          "type": "string",
+          "description": "Month ID in YYYY-MM format"
+        },
+        "year": {
+          "type": "number",
+          "description": "Year of the month"
+        }
+      },
+      "required": ["monthId", "year"]
+    },
+    "Day": {
+      "title": "Day",
+      "description": "Day schedule containing slots",
+      "type": "object",
+      "properties": {
+        "date": {
+          "type": "string",
+          "description": "Date in YYYY-MM-DD format"
+        },
+        "slot1": {
+          "type": ["string", "null"],
+          "description": "UID of the first employee scheduled, or null"
+        },
+        "slot2": {
+          "type": ["string", "null"],
+          "description": "UID of the second employee scheduled, or null"
+        }
+      },
+      "required": ["date"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": {
+        "$ref": "#/entities/User"
+      },
+      "description": "User profiles"
+    },
+    "/months/{monthId}": {
+      "schema": {
+        "$ref": "#/entities/Month"
+      },
+      "description": "Months for scheduling"
+    },
+    "/months/{monthId}/days/{date}": {
+      "schema": {
+        "$ref": "#/entities/Day"
+      },
+      "description": "Daily schedules"
+    }
+  }
+}
